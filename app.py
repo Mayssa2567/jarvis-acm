@@ -143,12 +143,44 @@ def main():
             # Append user input and response to conversation history
             st.session_state.conversation.append({"user": user_input, "jarvis": response})
 
+    # CSS for bubble background
+    st.markdown("""
+    <style>
+        .chat-container {
+            background-color: rgba(255, 255, 255, 0.8); /* Semi-transparent white */
+            border-radius: 10px;
+            padding: 20px;
+            max-height: 500px; /* Limit height for scrolling */
+            overflow-y: auto; /* Enable vertical scroll */
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        .user-bubble {
+            background-color: rgba(0, 123, 255, 0.2); /* Light blue for user */
+            border-radius: 20px;
+            padding: 10px;
+            margin: 5px 0;
+            display: inline-block;
+            max-width: 80%; /* Limit width */
+        }
+        .jarvis-bubble {
+            background-color: rgba(40, 167, 69, 0.2); /* Light green for Jarvis */
+            border-radius: 20px;
+            padding: 10px;
+            margin: 5px 0;
+            display: inline-block;
+            max-width: 80%; /* Limit width */
+        }
+    </style>
+    """, unsafe_allow_html=True)
+
     # Display conversation history
     st.write("### Conversation History")
     with st.container():
-        for chat in st.session_state.conversation:
-            st.write(f"**You:** {chat['user']}")
-            st.write(f"**Jarvis:** {chat['jarvis']}")
+        chat_container = st.container()
+        with chat_container:
+            for chat in st.session_state.conversation:
+                st.markdown(f'<div class="user-bubble">**You:** {chat["user"]}</div>', unsafe_allow_html=True)
+                st.markdown(f'<div class="jarvis-bubble">**Jarvis:** {chat["jarvis"]}</div>', unsafe_allow_html=True)
 
 def process_input(user_input, openai_model, gemini_model):
     if openai_model:
