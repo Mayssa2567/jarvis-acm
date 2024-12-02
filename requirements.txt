@@ -1,5 +1,3 @@
 speechrecognition
 pyttsx3
-datetime
-webbrowser
 wikipedia
