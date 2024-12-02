@@ -183,8 +183,8 @@ def main():
         chat_container = st.container()
         with chat_container:
             for chat in st.session_state.conversation:
-                st.markdown(f'<div class="user-bubble"><h4><b>You:</b></h4> {chat["user"]}</div>', unsafe_allow_html=True)
-                st.markdown(f'<div class="jarvis-bubble"><h4><b>Jarvis:</b></h4> {chat["jarvis"]}</div>', unsafe_allow_html=True)
+                st.markdown(f'<div class="user-bubble"><h6><b>You:</b></h6> {chat["user"]}</div>', unsafe_allow_html=True)
+                st.markdown(f'<div class="jarvis-bubble"><h6><b>Jarvis:</b></h6> {chat["jarvis"]}</div>', unsafe_allow_html=True)
 
 def process_input(user_input, openai_model, gemini_model):
     if openai_model:
