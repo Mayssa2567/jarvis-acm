@@ -79,50 +79,10 @@ def voice_interaction_component():
     </script>
     <button onclick="startRecording()">Start Voice Input</button>
     """, unsafe_allow_html=True)
-
-    # Add this function to your existing code
-def voice_input_component():
-    st.markdown("""
-    <script>
-    const startRecording = () => {
-        const recognition = new webkitSpeechRecognition();
-        recognition.lang = 'en-US';
-        recognition.onresult = (event) => {
-            const transcript = event.results[0][0].transcript;
-            window.parent.postMessage({type: 'voiceInput', text: transcript}, '*');
-        };
-        recognition.start();
-    }
-    </script>
-    """, unsafe_allow_html=True)
-
-    # SVG Microphone Icon with inline JavaScript
-    mic_svg = """
-    <svg id="micIcon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" 
-         fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-         style="cursor:pointer; transition: color 0.3s;"
-         onclick="startRecording()">
-        <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
-        <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
-        <line x1="12" y1="19" x2="12" y2="23"></line>
-        <line x1="8" y1="23" x2="16" y2="23"></line>
-    </svg>
-    """
     
-    return mic_svg
 
 # Main application logic
 def main():
-
-    col1, col2 = st.columns([0.9, 0.1])
-    with col1:
-        user_input = st.text_input("What can I help you with?", key="user_prompt")
-    
-    with col2:
-        # Add voice input component
-        mic_svg = voice_input_component()
-        st.markdown(mic_svg, unsafe_allow_html=True)
-        
     # Sidebar for configuration
     st.sidebar.header("AI Assistant Configuration")
 
