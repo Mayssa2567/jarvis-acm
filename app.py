@@ -143,48 +143,54 @@ def main():
             # Append user input and response to conversation history
             st.session_state.conversation.append({"user": user_input, "jarvis": response})
 
-    # CSS for bubble background
-    st.markdown("""
-        <style>
-            .chat-container {
-                background-color: rgba(255, 255, 255, 0.25); /* Semi-transparent white */
-                border-radius: 10px;
-                padding: 20px;
-                max-height: 500px; /* Limit height for scrolling */
-                overflow-y: auto; /* Enable vertical scroll */
-                box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            }
-            .user-bubble {
-                background-color: rgba(240, 240, 240, 0.25); /* Light gray for user */
-                border-radius: 20px 0 20px 20px;
-                padding: 10px;
-                margin: 5px 0;
-                display: inline-block;
-                max-width: 80%; /* Limit width */
-                float: right; /* Align to the right */
-                text-align: right; /* Align text to the right */
-            }
-            .jarvis-bubble {
-                background-color: rgba(220, 220, 220, 0.25); /* Slightly darker gray for Jarvis */
-                border-radius: 0 20px 20px 20px;
-                padding: 10px;
-                margin: 5px 0;
-                display: inline-block;
-                max-width: 80%; /* Limit width */
-                float: left; /* Align to the left */
-                text-align: left; /* Align text to the left */
-            }
-        </style>
-        """, unsafe_allow_html=True)
+# CSS for bubble background
+st.markdown("""
+<style>
+    .chat-container {
+        background-color: rgba(255, 255, 255, 0.8); /* Semi-transparent white */
+        border-radius: 10px;
+        padding: 20px;
+        max-height: 500px; /* Limit height for scrolling */
+        overflow-y: auto; /* Enable vertical scroll */
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+    .user-bubble {
+        background-color: rgba(240, 240, 240, 0.8); /* Light gray for user */
+        border-radius: 20px;
+        padding: 10px;
+        margin: 5px 0;
+        display: flex; /* Use flexbox */
+        align-items: center; /* Center items vertically */
+        max-width: 80%; /* Limit width */
+        float: right; /* Align to the right */
+        text-align: right; /* Align text to the right */
+    }
+    .jarvis-bubble {
+        background-color: rgba(220, 220, 220, 0.8); /* Slightly darker gray for Jarvis */
+        border-radius: 20px;
+        padding: 10px;
+        margin: 5px 0;
+        display: flex; /* Use flexbox */
+        align-items: center; /* Center items vertically */
+        max-width: 80%; /* Limit width */
+        float: left; /* Align to the left */
+        text-align: left; /* Align text to the left */
+    }
+    .bubble-label {
+        font-weight: bold; /* Make label bold */
+        margin-right: 5px; /* Space between label and content */
+    }
+</style>
+""", unsafe_allow_html=True)
 
-    # Display conversation history
-    st.write("### Conversation History")
-    with st.container():
-        chat_container = st.container()
-        with chat_container:
-            for chat in st.session_state.conversation:
-                st.markdown(f'<div class="user-bubble"><h6><b>You:</b></h6> {chat["user"]}</div>', unsafe_allow_html=True)
-                st.markdown(f'<div class="jarvis-bubble"><h6><b>Jarvis:</b></h6> {chat["jarvis"]}</div>', unsafe_allow_html=True)
+# Display conversation history
+st.write("### Conversation History")
+with st.container():
+    chat_container = st.container()
+    with chat_container:
+        for chat in st.session_state.conversation:
+            st.markdown(f'<div class="jarvis-bubble"><span class="bubble-label">Jarvis:</span> {chat["jarvis"]}</div>', unsafe_allow_html=True)
+            st.markdown(f'<div class="user-bubble"><span class="bubble-label">You:</span> {chat["user"]}</div>', unsafe_allow_html=True)
 
 def process_input(user_input, openai_model, gemini_model):
     if openai_model:
