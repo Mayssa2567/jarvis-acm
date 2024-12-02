@@ -164,7 +164,7 @@ def main():
             }
             .jarvis-bubble {
                 background-color: rgba(220, 220, 220, 0.25); /* Slightly darker gray for Jarvis */
-                border-radius: 20px;
+                border-radius: 0 20px 20px 20px;
                 padding: 10px;
                 margin: 5px 0;
                 display: inline-block;
