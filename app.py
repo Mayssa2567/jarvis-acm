@@ -1,6 +1,6 @@
 import streamlit as st
+from openai import OpenAI
 import google.generativeai as genai
-import openai
 from dotenv import load_dotenv
 import os
 
@@ -22,8 +22,7 @@ def init_openai(api_key=None):
     
     if api_key:
         try:
-            openai.api_key = api_key
-            return openai
+            return OpenAI(api_key=api_key)
         except Exception as e:
             st.error(f"OpenAI initialization error: {e}")
     return None
@@ -105,7 +104,7 @@ def main():
             # Prioritize OpenAI first
             if openai_model:
                 try:
-                    response = openai_model.ChatCompletion.create(
+                    response = openai_model.chat.completions.create(
                         model="gpt-3.5-turbo",
                         messages=[
                             {"role": "system", "content": "You are a helpful AI assistant named Jarvis."},
