@@ -147,7 +147,7 @@ def main():
     st.markdown("""
         <style>
             .chat-container {
-                background-color: rgba(255, 255, 255, 0.8); /* Semi-transparent white */
+                background-color: rgba(255, 255, 255, 0.25); /* Semi-transparent white */
                 border-radius: 10px;
                 padding: 20px;
                 max-height: 500px; /* Limit height for scrolling */
@@ -155,7 +155,7 @@ def main():
                 box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
             }
             .user-bubble {
-                background-color: rgba(240, 240, 240, 0.8); /* Light gray for user */
+                background-color: rgba(240, 240, 240, 0.25); /* Light gray for user */
                 border-radius: 20px;
                 padding: 10px;
                 margin: 5px 0;
@@ -163,7 +163,7 @@ def main():
                 max-width: 80%; /* Limit width */
             }
             .jarvis-bubble {
-                background-color: rgba(220, 220, 220, 0.8); /* Slightly darker gray for Jarvis */
+                background-color: rgba(220, 220, 220, 0.25); /* Slightly darker gray for Jarvis */
                 border-radius: 20px;
                 padding: 10px;
                 margin: 5px 0;
