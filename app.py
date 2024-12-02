@@ -156,11 +156,13 @@ def main():
             }
             .user-bubble {
                 background-color: rgba(240, 240, 240, 0.25); /* Light gray for user */
-                border-radius: 20px;
+                border-radius: 20px 0 20px 20px;
                 padding: 10px;
                 margin: 5px 0;
                 display: inline-block;
                 max-width: 80%; /* Limit width */
+                float: right; /* Align to the right */
+                text-align: right; /* Align text to the right */
             }
             .jarvis-bubble {
                 background-color: rgba(220, 220, 220, 0.25); /* Slightly darker gray for Jarvis */
@@ -169,6 +171,8 @@ def main():
                 margin: 5px 0;
                 display: inline-block;
                 max-width: 80%; /* Limit width */
+                float: left; /* Align to the left */
+                text-align: left; /* Align text to the left */
             }
         </style>
         """, unsafe_allow_html=True)
