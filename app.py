@@ -1,163 +1,129 @@
 import streamlit as st
-import speech_recognition as sr
-import pyttsx3
-import datetime
-import webbrowser
-import wikipedia
-import random
+import google.generativeai as genai
+import openai
+from dotenv import load_dotenv
+import os
 
-# Global initializations
-recognizer = sr.Recognizer()
-engine = pyttsx3.init()
+# Load environment variables
+load_dotenv()
 
-def speak(text):
-    """Convert text to speech"""
-    engine.say(text)
-    engine.runAndWait()
+# Set page configuration
+st.set_page_config(page_title="Jarvis AI Assistant", page_icon="🤖")
 
-def listen():
-    """Listen to user's voice input"""
-    with sr.Microphone() as source:
-        st.write("🎙️ Listening... Speak now")
-        recognizer.adjust_for_ambient_noise(source)
-        audio = recognizer.listen(source)
-        
-        try:
-            command = recognizer.recognize_google(audio)
-            return command.lower()
-        except:
-            st.write("❌ Sorry, I couldn't understand you.")
-            return ""
+# Title and description
+st.title("🤖 Jarvis AI Assistant")
+st.write("Your intelligent AI companion powered by Google Gemini and OpenAI")
 
-def get_time():
-    """Get current time"""
-    current_time = datetime.datetime.now().strftime("%I:%M %p")
-    return f"The current time is {current_time}"
+# Sidebar for configuration
+st.sidebar.header("AI Assistant Configuration")
 
-def get_date():
-    """Get current date"""
-    current_date = datetime.datetime.now().strftime("%d %B %Y")
-    return f"Today's date is {current_date}"
-
-def search_wikipedia(query):
-    """Search Wikipedia for information"""
+# Function to initialize Google Gemini
+def init_gemini(api_key):
     try:
-        result = wikipedia.summary(query, sentences=2)
-        return result
-    except:
-        return "Sorry, I couldn't find information about that."
+        genai.configure(api_key=api_key)
+        return genai.GenerativeModel('gemini-pro')
+    except Exception as e:
+        st.sidebar.error(f"Gemini initialization error: {e}")
+        return None
 
-def open_website(query):
-    """Open websites"""
-    websites = {
-        'google': 'https://www.google.com',
-        'youtube': 'https://www.youtube.com',
-        'github': 'https://www.github.com'
-    }
-    
-    for site in websites:
-        if site in query:
-            webbrowser.open(websites[site])
-            return f"Opening {site}"
-    
-    return "Sorry, I don't know how to open that website"
+# Function to initialize OpenAI
+def init_openai(api_key):
+    try:
+        openai.api_key = api_key
+        return openai
+    except Exception as e:
+        st.sidebar.error(f"OpenAI initialization error: {e}")
+        return None
 
-def tell_joke():
-    """Tell a fun joke"""
-    jokes = [
-        "Why do programmers prefer dark mode? Because light attracts bugs!",
-        "Why did the computer go to the doctor? Because it had a virus!",
-        "What do you call a fake noodle? An impasta!",
-        "Why don't scientists trust atoms? Because they make up everything!"
-    ]
-    return random.choice(jokes)
+# Predefined command handlers
+def handle_time():
+    from datetime import datetime
+    return f"Current time is: {datetime.now().strftime('%I:%M %p')}"
 
-def get_response(command):
-    """Generate intelligent responses"""
-    # Convert command to lowercase for easier matching
-    command = command.lower()
+def handle_date():
+    from datetime import datetime
+    return f"Today's date is: {datetime.now().strftime('%B %d, %Y')}"
 
-    # Dictionary of responses and actions
-    responses = {
-        'hello': "Hi there! I'm Jarvis, your AI assistant.",
-        'how are you': "I'm great! Ready to help you with anything.",
-        'your name': "I'm Jarvis, created to make your life easier!",
-        'time': get_time(),
-        'date': get_date(),
-        'joke': tell_joke()
-    }
+def handle_system_info():
+    import platform
+    return f"""
+    System Information:
+    - OS: {platform.system()}
+    - Release: {platform.release()}
+    - Machine: {platform.machine()}
+    """
 
-    # Check for exact matches first
-    for key in responses:
-        if key in command:
-            return responses[key]
-    
-    # Check for specific actions
-    if 'open' in command and 'website' in command:
-        return open_website(command)
-    
-    # Wikipedia search
-    if 'search' in command or 'tell me about' in command:
-        query = command.replace('search', '').replace('tell me about', '').strip()
-        return search_wikipedia(query)
-    
-    # Default responses
-    default_responses = [
-        "Interesting! Can you tell me more?",
-        "I'm listening. What else would you like to know?",
-        "That sounds cool! What would you like to explore?"
-    ]
-    
-    return random.choice(default_responses)
+def handle_weather():
+    return "Sorry, weather API integration is not implemented in this version."
 
+# Main application logic
 def main():
-    # Streamlit page configuration
-    st.set_page_config(page_title="Jarvis Assistant", page_icon="🤖")
-    
-    # Title and description
-    st.title("🤖 Jarvis: Your Intelligent Assistant")
-    st.write("Ask me anything! I can help with time, date, jokes, Wikipedia searches, and more.")
-    
-    # Create tabs for different interaction modes
-    tab1, tab2 = st.tabs(["Text Interaction", "Voice Interaction"])
-    
-    with tab1:
-        st.header("Text Chat")
-        # Text input
-        user_input_text = st.text_input("Type your message:", key="text_input")
-        
-        if user_input_text:
-            response = get_response(user_input_text)
-            st.write("Jarvis:", response)
-    
-    with tab2:
-        st.header("Voice Interaction")
-        # Voice input button
-        if st.button("🎙️ Start Listening"):
-            user_input_voice = listen()
-            
-            if user_input_voice:
-                st.write("You said:", user_input_voice)
-                response = get_response(user_input_voice)
-                st.write("Jarvis:", response)
-    
-    # Additional fun features
-    st.sidebar.header("Quick Actions")
-    if st.sidebar.button("Tell me a Joke"):
-        joke = tell_joke()
-        st.sidebar.write(joke)
-    
-    if st.sidebar.button("What's the Time?"):
-        st.sidebar.write(get_time())
-    
-    # Audio toggle
-    speak_response = st.checkbox("Read responses aloud")
-    if speak_response:
-        try:
-            speak(response)
-        except:
-            st.write("Could not read response aloud")
+    # API Key inputs
+    st.sidebar.subheader("API Keys")
+    gemini_api_key = st.sidebar.text_input("Google Gemini API Key", type="password")
+    openai_api_key = st.sidebar.text_input("OpenAI API Key (Optional)", type="password")
 
-# Run the Jarvis assistant
+    # Initialize models based on provided keys
+    gemini_model = init_gemini(gemini_api_key) if gemini_api_key else None
+    openai_model = init_openai(openai_api_key) if openai_api_key else None
+
+    # Predefined commands dictionary
+    commands = {
+        "time": handle_time,
+        "date": handle_date,
+        "system": handle_system_info,
+        "weather": handle_weather
+    }
+
+    # Chat input
+    user_input = st.chat_input("What can I help you with?")
+
+    if user_input:
+        # Check for predefined commands
+        if user_input.lower() in commands:
+            response = commands[user_input.lower()]()
+            st.write(response)
+        else:
+            # Try Gemini first
+            if gemini_model:
+                try:
+                    response = gemini_model.generate_content(user_input).text
+                    st.write("🤖 Gemini Response:", response)
+                except Exception as e:
+                    st.error(f"Gemini error: {e}")
+                    
+                    # Fallback to OpenAI if Gemini fails
+                    if openai_model:
+                        try:
+                            response = openai.ChatCompletion.create(
+                                model="gpt-3.5-turbo",
+                                messages=[
+                                    {"role": "system", "content": "You are a helpful AI assistant named Jarvis."},
+                                    {"role": "user", "content": user_input}
+                                ]
+                            ).choices[0].message.content
+                            st.write("🤖 OpenAI Response:", response)
+                        except Exception as e:
+                            st.error(f"OpenAI error: {e}")
+                    else:
+                        st.warning("No alternative AI model available.")
+            
+            # If Gemini is not available, use OpenAI
+            elif openai_model:
+                try:
+                    response = openai.ChatCompletion.create(
+                        model="gpt-3.5-turbo",
+                        messages=[
+                            {"role": "system", "content": "You are a helpful AI assistant named Jarvis."},
+                            {"role": "user", "content": user_input}
+                        ]
+                    ).choices[0].message.content
+                    st.write("🤖 OpenAI Response:", response)
+                except Exception as e:
+                    st.error(f"OpenAI error: {e}")
+            
+            else:
+                st.warning("Please provide an API key for Google Gemini or OpenAI")
+
 if __name__ == "__main__":
     main()

@@ -1,3 +1,4 @@
-speechrecognition
-pyttsx3
-wikipedia
+streamlit
+google-generativeai
+openai
+python-dotenv
