@@ -65,30 +65,20 @@ def handle_weather():
 # Web-based Voice Interaction Component
 def voice_interaction_component():
     st.write("### 🎤 Voice Interaction")
-    
-    # Create two columns: one for the voice button and one for the chat input
-    col1, col2 = st.columns([1, 3])  # Adjust the ratio as needed
-
-    with col1:
-        st.markdown("""<button onclick="startRecording()">Start Voice Input</button>""", unsafe_allow_html=True)
-
-    with col2:
-        st.chat_input("What can I help you with?")
-
-    # Add JavaScript to handle voice input
-    st.components.v1.html("""<script>
-    window.addEventListener('message', (event) => {
-        if (event.data.type === 'voiceInput') {
-            // Send voice input to Streamlit
-            window.parent.postMessage({
-                type: 'streamlit:setComponentValue', 
-                key: 'voiceInput', 
-                value: event.data.text
-            }, '*');
-        }
-    });
+    st.markdown("""
+    <script>
+    const startRecording = () => {
+        const recognition = new webkitSpeechRecognition();
+        recognition.lang = 'en-US';
+        recognition.onresult = (event) => {
+            const transcript = event.results[0][0].transcript;
+            window.parent.postMessage({type: 'voiceInput', text: transcript}, '*');
+        };
+        recognition.start();
+    }
     </script>
-    """, height=0)
+    <button onclick="startRecording()">Start Voice Input</button>
+    """, unsafe_allow_html=True)
 
 # Main application logic
 def main():
