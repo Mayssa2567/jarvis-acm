@@ -14,26 +14,33 @@ st.set_page_config(page_title="Jarvis AI Assistant", page_icon="🤖")
 st.title("🤖 Jarvis AI Assistant")
 st.write("Your intelligent AI companion powered by OpenAI and Google Gemini")
 
-# Sidebar for configuration
-st.sidebar.header("AI Assistant Configuration")
-
 # Function to initialize OpenAI
-def init_openai(api_key):
-    try:
-        openai.api_key = api_key
-        return openai
-    except Exception as e:
-        st.sidebar.error(f"OpenAI initialization error: {e}")
-        return None
+def init_openai(api_key=None):
+    # Try to get API key from environment if not provided
+    if not api_key:
+        api_key = os.getenv('OPENAI_API_KEY')
+    
+    if api_key:
+        try:
+            openai.api_key = api_key
+            return openai
+        except Exception as e:
+            st.error(f"OpenAI initialization error: {e}")
+    return None
 
 # Function to initialize Google Gemini
-def init_gemini(api_key):
-    try:
-        genai.configure(api_key=api_key)
-        return genai.GenerativeModel('gemini-pro')
-    except Exception as e:
-        st.sidebar.error(f"Gemini initialization error: {e}")
-        return None
+def init_gemini(api_key=None):
+    # Try to get API key from environment if not provided
+    if not api_key:
+        api_key = os.getenv('GOOGLE_API_KEY')
+    
+    if api_key:
+        try:
+            genai.configure(api_key=api_key)
+            return genai.GenerativeModel('gemini-pro')
+        except Exception as e:
+            st.error(f"Gemini initialization error: {e}")
+    return None
 
 # Predefined command handlers
 def handle_time():
@@ -58,14 +65,25 @@ def handle_weather():
 
 # Main application logic
 def main():
-    # API Key inputs
-    st.sidebar.subheader("API Keys")
-    openai_api_key = st.sidebar.text_input("OpenAI API Key", type="password")
-    gemini_api_key = st.sidebar.text_input("Google Gemini API Key (Optional)", type="password")
+    # Sidebar for configuration
+    st.sidebar.header("AI Assistant Configuration")
 
-    # Initialize models based on provided keys
-    openai_model = init_openai(openai_api_key) if openai_api_key else None
-    gemini_model = init_gemini(gemini_api_key) if gemini_api_key else None
+    # Check and initialize models
+    openai_model = init_openai()
+    gemini_model = init_gemini()
+
+    # If no API keys found in environment, prompt user
+    if not openai_model:
+        st.sidebar.warning("OpenAI API Key not found in environment.")
+        openai_api_key = st.sidebar.text_input("Enter OpenAI API Key", type="password")
+        if openai_api_key:
+            openai_model = init_openai(openai_api_key)
+
+    if not gemini_model:
+        st.sidebar.warning("Google Gemini API Key not found in environment.")
+        gemini_api_key = st.sidebar.text_input("Enter Google Gemini API Key", type="password")
+        if gemini_api_key:
+            gemini_model = init_gemini(gemini_api_key)
 
     # Predefined commands dictionary
     commands = {
